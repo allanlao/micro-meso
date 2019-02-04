@@ -1,0 +1,10 @@
+#
+#Sun Jun 04 16:27:06 PHT 2017
+operators=-~as~+~envelope~shuffle~>\=~line~where~<~not~even~or~\=~>~<\=~and~copy~in~.~distance_to~internal_at~remove_duplicates~collect~csv_file~\:\:~max_of~as_matrix~point~length~sqrt~max~floor~*~sum~abs~/~with_precision~last~first~rgb~inside~count~cos_rad~sin_rad~incomplete_beta~with_max_of~sort~with_min_of~\!~angle_between~contains~circle~neighbours_at~one_of~empty~at~mean~standard_deviation
+plugins=msi.gama.core~ummisco.gaml.extensions.stats
+attributes=points~y~x~rows~columns
+statements=action~ask~if~add~set~loop~using~let~return~put~else~break~do~arg~save~write~reflex~aspect~draw~init~create~output~display~display_grid~display_population~exhaustive~annealing~tabu~genetic
+skills=reflex~grid
+constants=orange~red~pi~white~beige~green~lightgreen~gray
+types=string~list~int~unknown~file~geometry~point~agent~rgb~float~bool~date~map~matrix~container~topology
+actions=debug~error~tell~write~die~_init_~_step_~halt~pause

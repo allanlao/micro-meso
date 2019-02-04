@@ -1,0 +1,9 @@
+#
+#Fri Nov 18 10:43:10 PHT 2016
+operators=envelope~-~abs~+~.~internal_at~*~sin~cos~point
+plugins=msi.gama.core
+statements=action~let~set~write~arg~return~aspect~init~do~output~display~display_grid~display_population
+skills=reflex~grid
+constants=white~yellow~black
+types=geometry~string~list~int~unknown~point~agent~rgb~float~bool~date~container
+actions=debug~error~tell~write~die~_init_~_step_~halt~pause

@@ -1,0 +1,9 @@
+#
+#Sun Jun 04 15:59:37 PHT 2017
+operators=envelope~-~+~*~cos_rad~/~with_precision~sin_rad~or~>~<~incomplete_beta~as~<\=
+plugins=msi.gama.core~ummisco.gaml.extensions.stats
+statements=action~arg~let~return~if~write~set~else
+skills=reflex
+constants=red~pi
+types=geometry~string~list~int~unknown~point~agent~rgb~float~bool~date~map~matrix~container
+actions=debug~error~tell~write~die~_init_~_step_~halt~pause
