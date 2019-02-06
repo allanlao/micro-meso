@@ -8,7 +8,7 @@ global {
 	file basin_file <- csv_file("../includes/paper/" + folder + "/basin.csv", ",");
 	file trap_file <- file("../includes/paper/" + folder + "/trap.csv");
 	file counter_file <- file("../includes/paper/" + folder + "/counters.csv");
-	int population <- 100 min: 1 max: 1000;
+	int population <- 700 min: 1 max: 1000;
 	bool use_people_generator <- false;
 	int people_ctr <- 0;
 	int flow <- 3;
@@ -248,6 +248,7 @@ global {
 		}
 
 		loop row_ctr from: 0 to: m.rows - 1 {
+			
 			int x1 <- 0;
 			int x2 <- 0;
 			int y1 <- 0;
@@ -264,7 +265,7 @@ global {
 				}
 
 			}
-
+ 
 			add int(m[4, row_ctr]) to: counters_list;
 		}
 
@@ -291,6 +292,9 @@ global {
 	}
 
 	action compute_performance {
+		  save date(machine_time) to: 
+            "../includes/paper/" + folder + "/zombie_results" type: "csv" header: false rewrite: false;
+	
 		ask zombie {
 			my_performance_record.travelTime <- 0.0;
 			//ind walking distance
@@ -319,6 +323,10 @@ global {
 			my_performance_record.walkingDelay <- ((my_performance_record.walkingDistance - my_performance_record.straightLineDistance) / my_performance_record.speed) with_precision 2;
 			my_performance_record.straightLineSpeed <- (my_performance_record.straightLineDistance / ((length(waypoints) - 1) * delta_time)) with_precision 2;
 			my_performance_record.movingDirection <- (my_performance_record.velocity / my_performance_record.straightLineSpeed) with_precision 2;
+		   save [name,time_expired,	my_performance_record.travelTime,my_performance_record.walkingDistance,my_performance_record.speed,rcso_counter_no] to: 
+            "../includes/paper/" + folder + "/zombie_results" type: "csv" header: false rewrite: false;
+		 
+		
 		}
 
 		//get system averages
@@ -327,23 +335,39 @@ global {
 		ave_travel_time <- (sum(zombie collect (each.my_performance_record.travelTime)) / length(zombie)) with_precision 2;
 		egress_time <- max(zombie collect (each.time_expired));
 		int total_zombie <- length(zombie);
+		
+		int total_ped <- 0;
+		
+		float rcso_awd <- 0.0;
+		float rcso_att <- 0.0;
+		float rcso_aws <- 0.0;
+		
+		
 		if (save_result) {
 			string line <- "" + population + "," + ave_walking_distance + "," + ave_walking_speed + "," + ave_travel_time + "," + egress_time;
 			save (line) to: "../includes/paper/" + folder + system_result_filename type: "csv" header: false rewrite: false;
 		}
 
+       save date(machine_time) to: 
+            "../includes/paper/" + folder + "/rcso_results" type: "csv" header: false rewrite: false;
 		loop ctr over: counters_list {
-			if (length(zombie where (each.rcso_counter_no = ctr)) > 0) {
-				write "Total Ped for Counter " + ctr + " :" + length(zombie where (each.rcso_counter_no = ctr));
-				write "% Ped for Counter " + ctr + " :" + (length(zombie where (each.rcso_counter_no = ctr)) / total_zombie) * 100;
-				write "RCSO AWD for Counter " + ctr + " :" + (sum((zombie where (each.rcso_counter_no = ctr)) collect (each.my_performance_record.walkingDistance)) / length(zombie where
-				(each.rcso_counter_no = ctr))) with_precision 2;
-				write "RCSO AWS for Counter " + ctr + " :" + (sum((zombie where (each.rcso_counter_no = ctr)) collect (each.my_performance_record.speed)) / length(zombie where
-				(each.rcso_counter_no = ctr))) with_precision 2;
-				write "RCSO ATT for Counter " + ctr + " :" + (sum((zombie where (each.rcso_counter_no = ctr)) collect (each.my_performance_record.travelTime)) / length(zombie where
-				(each.rcso_counter_no = ctr))) with_precision 2;
-			}
-
+			
+			list<zombie> rcso_zombies <-zombie where (each.rcso_counter_no = ctr);
+			if (length(rcso_zombies) > 0) {
+				total_ped <- length(rcso_zombies);
+				write "Total Ped for Counter " + ctr + " :" +  total_ped;
+			
+				write "% Ped for Counter " + ctr + " :" + total_ped / total_zombie * 100;
+			    	rcso_awd <-(sum(rcso_zombies collect (each.my_performance_record.walkingDistance)) / total_ped) with_precision 2;
+				write "RCSO AWD for Counter " + ctr + " :" + rcso_awd;
+				    rcso_aws <- (sum(rcso_zombies collect (each.my_performance_record.speed)) / total_ped) with_precision 2;
+				write "RCSO AWS for Counter " + ctr + " :" + rcso_aws;
+				    rcso_att <- (sum(rcso_zombies collect (each.my_performance_record.travelTime)) / total_ped) with_precision 2;
+				write "RCSO ATT for Counter " + ctr + " :" + rcso_att;
+			
+           save [ctr,total_zombie,total_ped,rcso_awd,rcso_aws,rcso_att] to: 
+            "../includes/paper/" + folder + "/rcso_results" type: "csv" header: false rewrite: false;
+		    }
 		}
 
 		//	string line <- string(beta_cdf_alpha) + " " + beta_cdf_beta + " " + string(ave_walking_distance) + " " + ave_travel_time + " " + ave_walking_speed;
@@ -932,6 +956,7 @@ species people {
 	bool locked_position <- false;
 	bool canMoveOut <- false;
 	navigation my_navigation;
+	int egress <- 0;
 
 	//point my_next_location <- nil;
 	int rcso_counter_no <- 0;
